@@ -12,5 +12,6 @@
 *.res
 .DS_Store
 .vs
+.idea
 tests/_test*
 build
