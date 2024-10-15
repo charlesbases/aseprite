@@ -1,0 +1,18 @@
+注意:
+  1. commit 信息需要指定为当前版本号
+  2. .github/workflows/build.yaml
+    2.1. 添加程序运行缺少的依赖库
+    - name: Compiling
+      shell: bash
+      run: |
+        cd build && ninja aseprite
+        curl -s -L https://github.com/charlesbases/aseprite/releases/download/v1.3.7/libcrypto-1_1-x64.dll --output bin/libcrypto-1_1-x64.dll
+    2.2. 添加 step 导出编译文件
+    - uses: actions/upload-artifact@v3
+      with:
+        name: aseprite
+        path: D:/a/aseprite/aseprite/build/bin
+
+
+# build
+20241015

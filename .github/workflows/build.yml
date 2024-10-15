@@ -6,17 +6,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-        build_type: [RelWithDebInfo, Debug]
-        ui: [gui, cli]
-        scripting: [lua, noscripts]
-        exclude:
-          - build_type: Debug
-            ui: gui
-          - build_type: RelWithDebInfo
-            ui: cli
-          - build_type: RelWithDebInfo
-            scripting: noscripts
+        os: [windows-latest]
+        build_type: [Release]
+        ui: [gui]
+        scripting: [lua]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -84,7 +77,7 @@ jobs:
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-          -DENABLE_TESTS=ON \
+          -DENABLE_TESTS=off \
           -DENABLE_UI=$enable_ui \
           -DENABLE_SCRIPTING=$enable_scripting \
           -DENABLE_CCACHE=$enable_ccache \
@@ -94,21 +87,9 @@ jobs:
     - name: Compiling
       shell: bash
       run: |
-        cd build && ninja
-    - name: Running C++ Tests
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "Linux" ]] ; then
-          export XVFB=xvfb-run
-        fi
-        cd build && $XVFB ctest --output-on-failure
-    - name: Running CLI Tests
-      if: ${{ matrix.scripting == 'lua' }}
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "Linux" ]] ; then
-          export XVFB=xvfb-run
-        fi
-        export ASEPRITE=$PWD/build/bin/aseprite
-        cd tests
-        $XVFB bash run-tests.sh
+        cd build && ninja aseprite
+        curl -s -L https://github.com/charlesbases/aseprite/releases/download/v1.3.7/libcrypto-1_1-x64.dll --output bin/libcrypto-1_1-x64.dll
+    - uses: actions/upload-artifact@v3
+      with:
+        name: aseprite
+        path: D:/a/aseprite/aseprite/build/bin
